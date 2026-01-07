@@ -7,10 +7,15 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.room.ColumnInfo
 import androidx.room.PrimaryKey
 import com.pdm.instacompose.login.data.OfflineUsersRepository
 import com.pdm.instacompose.login.data.User
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 
 class LoginViewModel(private val usersRepository: OfflineUsersRepository) : ViewModel() {
     private val _email = MutableLiveData<String>()
@@ -26,6 +31,19 @@ class LoginViewModel(private val usersRepository: OfflineUsersRepository) : View
     val isLoginEnabled: LiveData<Boolean> = _isLoginEnabled
 
     var userInfo by mutableStateOf(UserInfo())
+
+
+    val userInfoState: StateFlow<UsersState> =
+        usersRepository.getAllUsersStream().map { usersList ->
+            UsersState(usersList.map { user ->
+                user.toUserInfo()
+            })
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = UsersState()
+        )
+
 
     fun toggleCheck() {
         _chkState.value = !_chkState.value
@@ -56,6 +74,12 @@ class LoginViewModel(private val usersRepository: OfflineUsersRepository) : View
         return false
     }
 }
+
+
+data class UsersState(
+    val userList: List<UserInfo> = listOf()
+)
+
 
 data class UserInfo (
     val id: Int =0,

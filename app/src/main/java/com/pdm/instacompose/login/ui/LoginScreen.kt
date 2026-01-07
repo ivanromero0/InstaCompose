@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -26,6 +27,7 @@ import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
@@ -36,6 +38,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -116,6 +119,7 @@ fun Body(modifier: Modifier, loginViewModel: LoginViewModel) {
     val email by loginViewModel.email.observeAsState("")
     val password by loginViewModel.password.observeAsState("")
     val chkState by loginViewModel.chkState.observeAsState(false)
+    val userState by loginViewModel.userInfoState.collectAsState()
 
     val isLoginEnable by loginViewModel.isLoginEnabled.observeAsState(false)
     val coroutineScope = rememberCoroutineScope()
@@ -163,10 +167,28 @@ fun Body(modifier: Modifier, loginViewModel: LoginViewModel) {
         Spacer(modifier = Modifier.size(16.dp))
         LoginDivider()
         Spacer(modifier = Modifier.size(32.dp))
+        LazyColumn(modifier =
+            Modifier.background(Color.Blue).height(200.dp)) {
+            items(userState.userList.size) {
+                UserCard(userState.userList[it])
+            }
+        }
         SocialLogin()
     }
 
 
+}
+
+@Composable
+fun UserCard(userInfo:UserInfo) {
+    Card(modifier = Modifier.padding(8.dp)
+        .fillMaxWidth()) {
+        Column(modifier = Modifier.fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp)) {
+            Text(userInfo.firstName, fontWeight = FontWeight.Bold)
+            Text(userInfo.email)
+        }
+    }
 }
 
 @Composable
