@@ -6,11 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.pdm.instacompose.login.data.InstagramDatabase
-import com.pdm.instacompose.login.data.OfflineUsersRepository
 import com.pdm.instacompose.login.ui.LoginScreen
 import com.pdm.instacompose.login.ui.LoginViewModel
 import com.pdm.instacompose.ui.theme.InstaComposeTheme
@@ -18,7 +14,7 @@ import com.pdm.instacompose.ui.theme.InstaComposeTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val usersRepository= OfflineUsersRepository(InstagramDatabase.getDataBase(this).userDao())
+
         setContent {
             InstaComposeTheme {
                 // A surface container using the 'background' color from the theme
@@ -26,7 +22,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    LoginScreen(LoginViewModel(usersRepository))
+                    LoginScreen(LoginViewModel())
                 }
             }
         }
